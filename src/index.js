@@ -51,5 +51,5 @@ app.get('/live', (_, res) => res.json({ ok: true }));
 
 
 app.listen(PORT, () => {
-    console.log(`🚀 GraphQL listo en http://localhost:${PORT}/graphql`);
+    console.log(`GraphQL listo en http://localhost:${PORT}/graphql`);
 });

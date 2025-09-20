@@ -55,7 +55,7 @@ async function main() {
         }
     }
 
-    console.log("Seed listo ✅");
+    console.log("Seed listo ");
 }
 
 main().finally(() => prisma.$disconnect());
