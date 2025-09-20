@@ -23,7 +23,7 @@ export default (prisma) => ({
                 })
             ]);
 
-            // indexar costos por opId + tierId
+
             const byKey = new Map();
             for (const c of costs) byKey.set(`${c.operationId}-${c.volumeTierId}`, c);
 
@@ -31,7 +31,7 @@ export default (prisma) => ({
                 operation: op,
                 costs: tiers
                     .map(t => byKey.get(`${op.id}-${t.id}`))
-                    .filter(Boolean) // sólo los que existen; el front mostrará vacío si falta
+                    .filter(Boolean) 
             }));
         },
     },
@@ -64,7 +64,6 @@ export default (prisma) => ({
         },
 
         bulkUpsertCosts: async (_, { plantId, items }) => {
-            // Transacción por seguridad
             await prisma.$transaction(async (tx) => {
                 for (const item of items) {
                     const { operationId, entries } = item;

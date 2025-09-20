@@ -11,23 +11,22 @@ import resolversFactory from './resolvers.js';
 const PORT = process.env.PORT || 4000;
 const prisma = new PrismaClient();
 
-// cargar schema.graphql como string
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url), 'utf8');
 const resolvers = resolversFactory(prisma);
 
-// crear Apollo Server
+
 const server = new ApolloServer({
     typeDefs,
     resolvers,
 });
 
-// iniciar Apollo
+
 await server.start();
 
-// crear app Express
+
 const app = express();
 
-// middlewares globales
+
 app.use(
     cors({
         origin: ['http://localhost:5173', 'http://localhost:3000'],
@@ -35,7 +34,7 @@ app.use(
     })
 );
 
-// endpoint GraphQL
+
 app.use(
     '/graphql',
     bodyParser.json(),
@@ -47,10 +46,10 @@ app.use(
     })
 );
 
-// endpoint healthcheck
+
 app.get('/live', (_, res) => res.json({ ok: true }));
 
-// levantar server
+
 app.listen(PORT, () => {
     console.log(`🚀 GraphQL listo en http://localhost:${PORT}/graphql`);
 });
