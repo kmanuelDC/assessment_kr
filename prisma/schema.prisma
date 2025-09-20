@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Plant {
+  id            Int            @id @default(autoincrement())
+  code          String         @unique
+  name          String
+  indirectCosts IndirectCost[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Operation {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  description   String?
+  active        Boolean        @default(true)
+  indirectCosts IndirectCost[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model VolumeTier {
+  id            Int            @id @default(autoincrement())
+  label         String         @unique  // p.ej. "≤300 kg", "301–500 kg", "501 kg–1T", etc.
+  minKg         Int
+  maxKg         Int?                      // null => sin tope superior
+  order         Int
+  indirectCosts IndirectCost[]
+}
+
+model IndirectCost {
+  id           Int        @id @default(autoincrement())
+  plantId      Int
+  operationId  Int
+  volumeTierId Int
+  currency     String     @default("PEN")
+  amount       Decimal    @db.Decimal(10,2)
+  plant        Plant      @relation(fields: [plantId], references: [id])
+  operation    Operation  @relation(fields: [operationId], references: [id])
+  tier         VolumeTier @relation(fields: [volumeTierId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([plantId, operationId, volumeTierId])
+}

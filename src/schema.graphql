@@ -1,0 +1,79 @@
+scalar DateTime
+
+type Plant {
+  id: ID!
+  code: String!
+  name: String!
+}
+
+type Operation {
+  id: ID!
+  name: String!
+  description: String
+  active: Boolean!
+}
+
+type VolumeTier {
+  id: ID!
+  label: String!
+  minKg: Int!
+  maxKg: Int
+  order: Int!
+}
+
+type IndirectCost {
+  id: ID!
+  plantId: ID!
+  operationId: ID!
+  volumeTierId: ID!
+  currency: String!
+  amount: Float!
+  plant: Plant!
+  operation: Operation!
+  tier: VolumeTier!
+}
+
+type OperationCostRow {
+  operation: Operation!
+  costs: [IndirectCost!]!   # una entrada por tier existente (si no existe costo, el frontend mostrará vacío)
+}
+
+type Query {
+  plants: [Plant!]!
+  operations(activeOnly: Boolean = true): [Operation!]!
+  volumeTiers: [VolumeTier!]!
+  operationCostMatrix(plantId: ID!): [OperationCostRow!]!
+  indirectCosts(plantId: ID!, operationId: ID!): [IndirectCost!]!
+}
+
+input UpsertOperationInput {
+  id: ID
+  name: String!
+  description: String
+  active: Boolean = true
+}
+
+input UpsertIndirectCostInput {
+  plantId: ID!
+  operationId: ID!
+  volumeTierId: ID!
+  amount: Float!
+  currency: String = "PEN"
+}
+
+input CostEntryInput {
+  volumeTierId: ID!
+  amount: Float!
+  currency: String = "PEN"
+}
+
+input BulkCostInput {
+  operationId: ID!
+  entries: [CostEntryInput!]!
+}
+
+type Mutation {
+  upsertOperation(input: UpsertOperationInput!): Operation!
+  upsertIndirectCost(input: UpsertIndirectCostInput!): IndirectCost!
+  bulkUpsertCosts(plantId: ID!, items: [BulkCostInput!]!): Boolean!
+}
